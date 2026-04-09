@@ -87,16 +87,13 @@ else
 
     <!-- Acciones rápidas -->
     <div class="acciones-rapidas">
-        <button class="btn btn-outline-primary btn-sm"
-                @onclick="() => Nav.NavigateTo($\"/expedientes/{Id}/checklist\")">
+        <button class="btn btn-outline-primary btn-sm" @onclick="VerChecklist">
             📋 Ver checklist
         </button>
-        <button class="btn btn-outline-primary btn-sm"
-                @onclick="() => Nav.NavigateTo($\"/expedientes/{Id}/planificacion\")">
+        <button class="btn btn-outline-primary btn-sm" @onclick="VerPlanificacion">
             📅 Planificación
         </button>
-        <button class="btn btn-outline-primary btn-sm"
-                @onclick="() => Nav.NavigateTo($\"/expedientes/{Id}/intervenciones\")">
+        <button class="btn btn-outline-primary btn-sm" @onclick="VerIntervenciones">
             🔧 Intervenciones
         </button>
     </div>
@@ -149,4 +146,7 @@ else
     }
 
     private void Volver() => Nav.NavigateTo("/expedientes");
+    private void VerChecklist() => Nav.NavigateTo($"/expedientes/{Id}/checklist");
+    private void VerPlanificacion() => Nav.NavigateTo($"/expedientes/{Id}/planificacion");
+    private void VerIntervenciones() => Nav.NavigateTo($"/expedientes/{Id}/intervenciones");
 }

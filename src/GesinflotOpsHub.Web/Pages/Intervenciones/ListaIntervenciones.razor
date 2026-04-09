@@ -26,7 +26,7 @@
         @foreach (var t in Enum.GetValues<TipoIntervencion>())
         { <option value="@t">@t</option> }
     </select>
-    <input type="month" class="form-control" @bind="_filtroMes" />
+    <input type="text" class="form-control" placeholder="Filtrar mes (YYYY-MM)" @bind="_filtroMes" @bind:event="oninput" />
 </div>
 
 @if (_intervenciones is null)

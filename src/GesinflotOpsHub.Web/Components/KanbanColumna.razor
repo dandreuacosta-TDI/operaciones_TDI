@@ -10,7 +10,7 @@
     <div class="kanban-cards">
         @foreach (var exp in Expedientes)
         {
-            <div class="kanban-card" @onclick="() => Nav.NavigateTo($\"/expedientes/{exp.Id}\")">
+            <div class="kanban-card" @onclick="() => VerExpediente(exp.Id)">
                 <div class="card-code">@exp.CodigoExpediente</div>
                 <div class="card-cliente">@exp.RazonSocialCliente</div>
                 <div class="card-meta">
@@ -29,4 +29,6 @@
     [Parameter] public string Titulo { get; set; } = "";
     [Parameter] public string Icono { get; set; } = "";
     [Parameter] public IEnumerable<ExpedienteListDto> Expedientes { get; set; } = Enumerable.Empty<ExpedienteListDto>();
+
+    private void VerExpediente(Guid id) => Nav.NavigateTo($"/expedientes/{id}");
 }
