@@ -97,7 +97,12 @@ try
     app.UseAuthorization();
 
     // ── HealthChecks endpoints (Railway) ──────────────────────────────────
-    app.MapHealthChecks("/health");
+    // /health → liveness (siempre 200, no comprueba BD)
+    app.MapHealthChecks("/health", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
+    {
+        Predicate = _ => false
+    });
+    // /health/ready → readiness (comprueba BD)
     app.MapHealthChecks("/health/ready", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
     {
         Predicate = hc => hc.Tags.Contains("ready")

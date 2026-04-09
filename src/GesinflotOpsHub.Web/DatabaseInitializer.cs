@@ -16,17 +16,17 @@ public static class DatabaseInitializer
 
         try
         {
-            logger.LogInformation("Ejecutando migraciones EF Core...");
-            await db.Database.MigrateAsync();
-            logger.LogInformation("Migraciones completadas.");
+            logger.LogInformation("Inicializando base de datos...");
+            await db.Database.EnsureCreatedAsync();
+            logger.LogInformation("Base de datos lista.");
 
             await SeedRolesAsync(roleManager);
             await SeedAdminUserAsync(userManager, app.Configuration);
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error durante la inicialización de base de datos");
-            throw;
+            logger.LogError(ex, "Error durante la inicialización de base de datos — la app arranca de todas formas");
+            // No re-throw: permite que la app arranque aunque la BD no esté lista
         }
     }
 
