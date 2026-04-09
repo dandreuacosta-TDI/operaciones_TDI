@@ -99,10 +99,11 @@ else
     private string _nuevoRol = "SoloLectura";
     private string _errorMsg = "";
 
-    protected override async Task OnInitializedAsync()
+    protected override Task OnInitializedAsync()
     {
         _usuarios = UserManager.Users.ToList();
         _roles = RoleManager.Roles.OrderBy(r => r.Name).ToList();
+        return Task.CompletedTask;
     }
 
     private async Task CrearUsuario()
