@@ -20,9 +20,9 @@ else
         <KpiCard Title="Instalaciones pendientes" Value="@_kpis.InstalacionesPendientes.ToString()" Icon="📅" Color="orange" />
         <KpiCard Title="Intervenciones este mes" Value="@_kpis.IntervencionesEstesMes.ToString()" Icon="🔧" Color="green" />
         <KpiCard Title="Checklists pendientes" Value="@_kpis.ChecklistsPendientes.ToString()" Icon="✅" Color="yellow" />
-        <KpiCard Title="Facturación del mes" Value="@_kpis.FacturacionMes.ToString("N0") + " €"" Icon="💶" Color="teal" />
-        <KpiCard Title="Facturación acumulada" Value="@_kpis.FacturacionAcumulada.ToString("N0") + " €"" Icon="📈" Color="purple" />
-        <KpiCard Title="Margen medio" Value="@_kpis.MargenMedio.ToString("N1") + " %"" Icon="📉" Color="red" />
+        <KpiCard Title="Facturación del mes" Value="@($"{_kpis.FacturacionMes:N0} €")" Icon="💶" Color="teal" />
+        <KpiCard Title="Facturación acumulada" Value="@($"{_kpis.FacturacionAcumulada:N0} €")" Icon="📈" Color="purple" />
+        <KpiCard Title="Margen medio" Value="@($"{_kpis.MargenMedio:N1} %")" Icon="📉" Color="red" />
         <KpiCard Title="Intervenciones realizadas" Value="@_kpis.IntervencionesRealizadas.ToString()" Icon="✔️" Color="green" />
     </div>
 

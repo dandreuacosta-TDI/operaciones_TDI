@@ -20,7 +20,7 @@
                 <span class="nav-icon">👷</span> Instaladores
             </NavLink>
 
-            <AuthorizeView Roles="Administrador,Operaciones,Direccion">
+            <AuthorizeView Roles="Administrador,Operaciones,Direccion" Context="innerCtx">
                 <div class="nav-section-title">Gestión</div>
                 <NavLink class="nav-link" href="usuarios">
                     <span class="nav-icon">👥</span> Usuarios
