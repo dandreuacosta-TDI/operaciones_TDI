@@ -1,0 +1,24 @@
+.env
+.env.local
+*.user
+.vs/
+bin/
+obj/
+*.suo
+node_modules/
+.DS_Store
+Thumbs.db
+
+# Secretos y configuraciones locales
+appsettings.*.local.json
+secrets.json
+
+# Logs
+logs/
+*.log
+
+# Migraciones temporales (mantener las reales)
+# migrations/ — NO ignorar, son parte del código
+
+# Docker
+.dockerignore

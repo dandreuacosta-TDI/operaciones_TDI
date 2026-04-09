@@ -1,0 +1,56 @@
+version: "3.9"
+
+services:
+  # PostgreSQL local para desarrollo
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: gesinflot_dev
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # App (desarrollo local con override de env)
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      PORT: 8080
+      ConnectionStrings__DefaultConnection: "Host=postgres;Database=gesinflot_dev;Username=postgres;Password=postgres"
+      Odoo__BaseUrl: ""
+      Odoo__Database: ""
+      Odoo__Username: ""
+      Odoo__ApiKey: ""        # COMPLETAR localmente, nunca commitear
+      Email__Host: "mailhog"
+      Email__Port: "1025"
+      Email__User: "test@gesinflot.com"
+      Email__Password: ""
+      Email__From: "Gesinflot Dev <test@gesinflot.com>"
+      App__BaseUrl: "http://localhost:8080"
+      App__AdminEmail: "admin@gesinflot.com"
+      App__AdminPassword: "Admin@Dev2024!"
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # MailHog para pruebas de email locales
+  mailhog:
+    image: mailhog/mailhog
+    ports:
+      - "1025:1025"   # SMTP
+      - "8025:8025"   # UI web
+
+volumes:
+  pgdata:

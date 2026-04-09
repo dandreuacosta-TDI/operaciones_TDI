@@ -1,0 +1,32 @@
+@namespace GesinflotOpsHub.Web.Components
+@inject NavigationManager Nav
+@using GesinflotOpsHub.Application.DTOs
+
+<div class="kanban-col">
+    <div class="kanban-col-header">
+        <span>@Icono @Titulo</span>
+        <span class="badge bg-secondary">@Expedientes.Count()</span>
+    </div>
+    <div class="kanban-cards">
+        @foreach (var exp in Expedientes)
+        {
+            <div class="kanban-card" @onclick="() => Nav.NavigateTo($\"/expedientes/{exp.Id}\")">
+                <div class="card-code">@exp.CodigoExpediente</div>
+                <div class="card-cliente">@exp.RazonSocialCliente</div>
+                <div class="card-meta">
+                    <span>@exp.TipoExpediente</span>
+                    @if (exp.FechaInstalacionPrevista.HasValue)
+                    {
+                        <span class="card-fecha">📅 @exp.FechaInstalacionPrevista.Value.ToString("dd/MM")</span>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter] public string Titulo { get; set; } = "";
+    [Parameter] public string Icono { get; set; } = "";
+    [Parameter] public IEnumerable<ExpedienteListDto> Expedientes { get; set; } = Enumerable.Empty<ExpedienteListDto>();
+}

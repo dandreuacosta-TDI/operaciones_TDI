@@ -1,0 +1,150 @@
+@page "/usuarios"
+@attribute [Authorize(Policy = "Administrador")]
+@inject UserManager<ApplicationUser> UserManager
+@inject RoleManager<IdentityRole> RoleManager
+@using GesinflotOpsHub.Infrastructure.Persistence
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Authorization
+
+<PageTitle>Usuarios — Gesinflot</PageTitle>
+
+<div class="page-header">
+    <h1 class="page-title">👥 Gestión de Usuarios</h1>
+    <button class="btn btn-primary" @onclick="() => _mostrarNuevo = true">+ Nuevo usuario</button>
+</div>
+
+@if (_usuarios is null)
+{
+    <p class="loading">Cargando usuarios...</p>
+}
+else
+{
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Email</th>
+                <th>Rol</th>
+                <th>Último acceso</th>
+                <th>Estado</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var u in _usuarios)
+            {
+                <tr>
+                    <td>@u.NombreCompleto</td>
+                    <td>@u.Email</td>
+                    <td><span class="badge bg-info">@u.Rol</span></td>
+                    <td>@(u.FechaUltimoAcceso?.ToString("dd/MM/yyyy HH:mm") ?? "Nunca")</td>
+                    <td>@(u.Activo ? "✅ Activo" : "❌ Inactivo")</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-secondary" @onclick="() => EditarUsuario(u)">Editar</button>
+                        <button class="btn btn-sm btn-outline-warning" @onclick="() => ResetPassword(u)">Reset pwd</button>
+                        <button class="btn btn-sm btn-outline-danger" @onclick="() => ToggleActivo(u)">
+                            @(u.Activo ? "Desactivar" : "Activar")
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<!-- Modal nuevo usuario -->
+@if (_mostrarNuevo)
+{
+    <div class="modal-overlay">
+        <div class="modal-dialog">
+            <h4>Nuevo usuario</h4>
+            <div class="mb-2">
+                <label>Nombre completo</label>
+                <input class="form-control" @bind="_nuevoNombre" />
+            </div>
+            <div class="mb-2">
+                <label>Email</label>
+                <input type="email" class="form-control" @bind="_nuevoEmail" />
+            </div>
+            <div class="mb-2">
+                <label>Contraseña temporal</label>
+                <input type="password" class="form-control" @bind="_nuevoPassword" />
+            </div>
+            <div class="mb-2">
+                <label>Rol</label>
+                <select class="form-select" @bind="_nuevoRol">
+                    @foreach (var rol in _roles)
+                    { <option>@rol.Name</option> }
+                </select>
+            </div>
+            @if (!string.IsNullOrEmpty(_errorMsg))
+            {
+                <div class="alert alert-danger">@_errorMsg</div>
+            }
+            <div class="modal-actions mt-2">
+                <button class="btn btn-primary" @onclick="CrearUsuario">Crear</button>
+                <button class="btn btn-secondary" @onclick="() => _mostrarNuevo = false">Cancelar</button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private List<ApplicationUser>? _usuarios;
+    private List<IdentityRole> _roles = new();
+    private bool _mostrarNuevo = false;
+    private string _nuevoNombre = "";
+    private string _nuevoEmail = "";
+    private string _nuevoPassword = "";
+    private string _nuevoRol = "SoloLectura";
+    private string _errorMsg = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        _usuarios = UserManager.Users.ToList();
+        _roles = RoleManager.Roles.OrderBy(r => r.Name).ToList();
+    }
+
+    private async Task CrearUsuario()
+    {
+        _errorMsg = "";
+        var user = new ApplicationUser
+        {
+            UserName = _nuevoEmail,
+            Email = _nuevoEmail,
+            NombreCompleto = _nuevoNombre,
+            Rol = _nuevoRol,
+            Activo = true,
+            EmailConfirmed = true
+        };
+        var result = await UserManager.CreateAsync(user, _nuevoPassword);
+        if (!result.Succeeded)
+        {
+            _errorMsg = string.Join("; ", result.Errors.Select(e => e.Description));
+            return;
+        }
+        await UserManager.AddToRoleAsync(user, _nuevoRol);
+        _mostrarNuevo = false;
+        _usuarios = UserManager.Users.ToList();
+    }
+
+    private async Task ToggleActivo(ApplicationUser u)
+    {
+        u.Activo = !u.Activo;
+        await UserManager.UpdateAsync(u);
+        StateHasChanged();
+    }
+
+    private async Task ResetPassword(ApplicationUser u)
+    {
+        var token = await UserManager.GeneratePasswordResetTokenAsync(u);
+        var tempPass = "Temp@" + Guid.NewGuid().ToString()[..8] + "!";
+        await UserManager.ResetPasswordAsync(u, token, tempPass);
+        // En producción: enviar por email, no mostrar en UI
+    }
+
+    private void EditarUsuario(ApplicationUser u)
+    {
+        // Navegar a edición completa
+    }
+}

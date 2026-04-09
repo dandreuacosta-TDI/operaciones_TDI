@@ -1,0 +1,21 @@
+/* Portal Cliente — layout minimalista y responsive */
+.portal-body { background: #f0f4f8; font-family: 'Segoe UI', Arial, sans-serif; }
+.portal-container { max-width: 640px; margin: 40px auto; padding: 0 20px; }
+.portal-header { text-align: center; margin-bottom: 32px; }
+.portal-logo { max-height: 60px; margin-bottom: 16px; }
+.portal-header h1 { font-size: 22px; color: #1a4b8e; font-weight: 700; }
+.portal-card { background: white; border-radius: 10px; padding: 24px;
+    box-shadow: 0 2px 12px rgba(0,0,0,.1); margin-bottom: 20px; }
+.portal-card h2 { font-size: 18px; font-weight: 700; margin-bottom: 12px; }
+.presupuesto-info p { margin: 6px 0; font-size: 15px; }
+.portal-aceptacion { background: white; border-radius: 10px; padding: 24px;
+    box-shadow: 0 2px 12px rgba(0,0,0,.1); }
+.portal-aceptacion h3 { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
+.aceptacion-actions { display: flex; gap: 12px; margin-top: 20px; flex-wrap: wrap; }
+.portal-error, .portal-loading { text-align: center; padding: 60px 20px; }
+.portal-error h2 { color: #c0392b; }
+
+@media (max-width: 480px) {
+    .aceptacion-actions { flex-direction: column; }
+    .aceptacion-actions .btn { width: 100%; }
+}

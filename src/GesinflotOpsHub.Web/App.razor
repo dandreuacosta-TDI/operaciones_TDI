@@ -1,0 +1,24 @@
+<Router AppAssembly="@typeof(App).Assembly">
+    <Found Context="routeData">
+        <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
+            <NotAuthorized>
+                @if (context.User.Identity?.IsAuthenticated != true)
+                {
+                    <RedirectToLogin />
+                }
+                else
+                {
+                    <p class="text-danger">No tiene permisos para acceder a esta sección.</p>
+                }
+            </NotAuthorized>
+        </AuthorizeRouteView>
+        <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+    </Found>
+    <NotFound>
+        <PageTitle>Página no encontrada — Gesinflot</PageTitle>
+        <LayoutView Layout="@typeof(MainLayout)">
+            <h2>Página no encontrada (404)</h2>
+            <a href="/">Volver al inicio</a>
+        </LayoutView>
+    </NotFound>
+</Router>

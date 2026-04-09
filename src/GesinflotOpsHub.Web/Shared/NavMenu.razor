@@ -1,0 +1,37 @@
+<AuthorizeView>
+    <Authorized>
+        <div class="nav-menu">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                <span class="nav-icon">📊</span> Dashboard
+            </NavLink>
+            <NavLink class="nav-link" href="expedientes">
+                <span class="nav-icon">📁</span> Expedientes
+            </NavLink>
+            <NavLink class="nav-link" href="intervenciones">
+                <span class="nav-icon">🔧</span> Intervenciones
+            </NavLink>
+            <NavLink class="nav-link" href="planificacion">
+                <span class="nav-icon">📅</span> Planificación
+            </NavLink>
+            <NavLink class="nav-link" href="clientes">
+                <span class="nav-icon">🏢</span> Clientes
+            </NavLink>
+            <NavLink class="nav-link" href="instaladores">
+                <span class="nav-icon">👷</span> Instaladores
+            </NavLink>
+
+            <AuthorizeView Roles="Administrador,Operaciones,Direccion">
+                <div class="nav-section-title">Gestión</div>
+                <NavLink class="nav-link" href="usuarios">
+                    <span class="nav-icon">👥</span> Usuarios
+                </NavLink>
+                <NavLink class="nav-link" href="odoo">
+                    <span class="nav-icon">🔗</span> Odoo Sync
+                </NavLink>
+            </AuthorizeView>
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        <a class="nav-link" href="Identity/Account/Login">Acceder</a>
+    </NotAuthorized>
+</AuthorizeView>

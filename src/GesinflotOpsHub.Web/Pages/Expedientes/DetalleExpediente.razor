@@ -1,0 +1,152 @@
+@page "/expedientes/{Id:guid}"
+@attribute [Authorize(Policy = "Comercial")]
+@inject IExpedienteService ExpedienteService
+@inject NavigationManager Nav
+@using GesinflotOpsHub.Application.DTOs
+@using GesinflotOpsHub.Application.Services
+@using GesinflotOpsHub.Domain.Enums
+@using Microsoft.AspNetCore.Authorization
+
+<PageTitle>Expediente @(_exp?.CodigoExpediente ?? "") — Gesinflot</PageTitle>
+
+@if (_exp is null)
+{
+    <p>Cargando...</p>
+}
+else
+{
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">📁 @_exp.CodigoExpediente</h1>
+            <span class="badge-estado">@_exp.Estado</span>
+            <span class="badge-tipo">@_exp.TipoExpediente</span>
+        </div>
+        <div class="actions">
+            <button class="btn btn-outline-secondary btn-sm" @onclick="Volver">← Volver</button>
+            <AuthorizeView Roles="Administrador,Operaciones">
+                <button class="btn btn-warning btn-sm" @onclick="() => _mostrarCambioEstado = true">Cambiar estado</button>
+            </AuthorizeView>
+        </div>
+    </div>
+
+    <div class="detail-grid">
+        <!-- Datos generales -->
+        <div class="detail-card">
+            <h3>Datos generales</h3>
+            <dl>
+                <dt>Cliente</dt><dd>@_exp.RazonSocialCliente</dd>
+                <dt>Tipo</dt><dd>@_exp.TipoExpediente</dd>
+                <dt>Cliente existente</dt><dd>@(_exp.ClienteExistente ? "Sí" : "No")</dd>
+                <dt>Comercial</dt><dd>@(_exp.ComercialResponsable ?? "—")</dd>
+            </dl>
+        </div>
+
+        <!-- Odoo -->
+        <div class="detail-card">
+            <h3>Vínculo Odoo</h3>
+            <dl>
+                <dt>Presupuesto Odoo</dt><dd>@(_exp.OdooBudgetId ?? "—")</dd>
+                <dt>Nº Presupuesto</dt><dd>@(_exp.NumeroPresupuesto ?? "—")</dd>
+                <dt>Sale Order</dt><dd>@(_exp.OdooSaleOrderId ?? "—")</dd>
+                <dt>Pedido Venta</dt><dd>@(_exp.NumeroPedidoVenta ?? "—")</dd>
+            </dl>
+        </div>
+
+        <!-- Fechas -->
+        <div class="detail-card">
+            <h3>Fechas</h3>
+            <dl>
+                <dt>Creación</dt><dd>@_exp.FechaCreacion.ToString("dd/MM/yyyy HH:mm")</dd>
+                <dt>Presupuesto</dt><dd>@(_exp.FechaPresupuesto?.ToString("dd/MM/yyyy") ?? "—")</dd>
+                <dt>Aceptación</dt><dd>@(_exp.FechaAceptacion?.ToString("dd/MM/yyyy") ?? "—")</dd>
+                <dt>Instalación prevista</dt><dd>@(_exp.FechaInstalacionPrevista?.ToString("dd/MM/yyyy") ?? "—")</dd>
+                <dt>Instalación real</dt><dd>@(_exp.FechaInstalacionReal?.ToString("dd/MM/yyyy") ?? "—")</dd>
+                <dt>Facturación</dt><dd>@(_exp.FechaFacturacion?.ToString("dd/MM/yyyy") ?? "—")</dd>
+            </dl>
+        </div>
+
+        <!-- Economía -->
+        <div class="detail-card">
+            <h3>Datos económicos</h3>
+            <dl>
+                <dt>Facturable</dt><dd>@(_exp.EsFacturable ? "✅ Sí" : "❌ No")</dd>
+                <dt>Presupuestado</dt><dd>@(_exp.ImportePresupuestado?.ToString("N2") + " €" ?? "—")</dd>
+                <dt>Facturado</dt><dd>@(_exp.ImporteFacturado?.ToString("N2") + " €" ?? "—")</dd>
+                <dt>Coste operativo</dt><dd>@(_exp.CosteOperativo?.ToString("N2") + " €" ?? "—")</dd>
+            </dl>
+        </div>
+    </div>
+
+    @if (!string.IsNullOrEmpty(_exp.Observaciones))
+    {
+        <div class="detail-card full-width">
+            <h3>Observaciones</h3>
+            <p>@_exp.Observaciones</p>
+        </div>
+    }
+
+    <!-- Acciones rápidas -->
+    <div class="acciones-rapidas">
+        <button class="btn btn-outline-primary btn-sm"
+                @onclick="() => Nav.NavigateTo($\"/expedientes/{Id}/checklist\")">
+            📋 Ver checklist
+        </button>
+        <button class="btn btn-outline-primary btn-sm"
+                @onclick="() => Nav.NavigateTo($\"/expedientes/{Id}/planificacion\")">
+            📅 Planificación
+        </button>
+        <button class="btn btn-outline-primary btn-sm"
+                @onclick="() => Nav.NavigateTo($\"/expedientes/{Id}/intervenciones\")">
+            🔧 Intervenciones
+        </button>
+    </div>
+
+    <!-- Modal cambio estado -->
+    @if (_mostrarCambioEstado)
+    {
+        <div class="modal-overlay">
+            <div class="modal-dialog">
+                <h4>Cambiar estado</h4>
+                <select class="form-select" @bind="_nuevoEstado">
+                    @foreach (var e in Enum.GetValues<EstadoExpediente>())
+                    {
+                        <option value="@e">@e</option>
+                    }
+                </select>
+                <textarea class="form-control mt-2" placeholder="Observación (opcional)" @bind="_observacionCambio"></textarea>
+                <div class="modal-actions mt-2">
+                    <button class="btn btn-primary" @onclick="CambiarEstado">Confirmar</button>
+                    <button class="btn btn-secondary" @onclick="() => _mostrarCambioEstado = false">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    }
+}
+
+@code {
+    [Parameter] public Guid Id { get; set; }
+    private ExpedienteDetailDto? _exp;
+    private bool _mostrarCambioEstado = false;
+    private EstadoExpediente _nuevoEstado;
+    private string _observacionCambio = "";
+
+    [CascadingParameter] private Task<AuthenticationState>? AuthState { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        _exp = await ExpedienteService.GetDetailAsync(Id);
+        if (_exp is not null) _nuevoEstado = _exp.Estado;
+    }
+
+    private async Task CambiarEstado()
+    {
+        var auth = await AuthState!;
+        var usuario = auth.User.Identity?.Name ?? "sistema";
+        await ExpedienteService.AvanzarEstadoAsync(
+            new ActualizarEstadoExpedienteDto(Id, _nuevoEstado, _observacionCambio), usuario);
+        _exp = await ExpedienteService.GetDetailAsync(Id);
+        _mostrarCambioEstado = false;
+    }
+
+    private void Volver() => Nav.NavigateTo("/expedientes");
+}

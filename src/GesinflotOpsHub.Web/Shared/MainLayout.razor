@@ -1,0 +1,22 @@
+@inherits LayoutComponentBase
+@inject NavigationManager Nav
+
+<div class="page">
+    <div class="sidebar">
+        <div class="sidebar-brand">
+            <span class="brand-icon">🚛</span>
+            <span class="brand-text">Gesinflot<br/><small>Ops Hub</small></span>
+        </div>
+        <NavMenu />
+    </div>
+    <main>
+        <div class="top-row px-4 auth">
+            <LoginDisplay />
+        </div>
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+</div>
+
+@code { }

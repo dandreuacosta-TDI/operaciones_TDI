@@ -1,0 +1,103 @@
+@page "/expedientes"
+@attribute [Authorize(Policy = "Comercial")]
+@inject IExpedienteService ExpedienteService
+@inject NavigationManager Nav
+@using GesinflotOpsHub.Application.DTOs
+@using GesinflotOpsHub.Application.Services
+@using GesinflotOpsHub.Domain.Enums
+@using Microsoft.AspNetCore.Authorization
+
+<PageTitle>Expedientes — Gesinflot</PageTitle>
+
+<div class="page-header">
+    <h1 class="page-title">📁 Expedientes</h1>
+    <AuthorizeView Roles="Administrador,Operaciones">
+        <button class="btn btn-primary" @onclick="NuevoExpediente">+ Nuevo expediente</button>
+    </AuthorizeView>
+</div>
+
+<!-- Filtros -->
+<div class="filtros-bar">
+    <input class="form-control" placeholder="Buscar por código, cliente..." @bind="_busqueda" @bind:event="oninput" />
+    <select class="form-select" @bind="_filtroEstado">
+        <option value="">Todos los estados</option>
+        @foreach (var e in Enum.GetValues<EstadoExpediente>())
+        {
+            <option value="@e">@e</option>
+        }
+    </select>
+    <select class="form-select" @bind="_filtroTipo">
+        <option value="">Todos los tipos</option>
+        @foreach (var t in Enum.GetValues<TipoExpediente>())
+        {
+            <option value="@t">@t</option>
+        }
+    </select>
+</div>
+
+@if (_expedientes is null)
+{
+    <p class="loading">Cargando expedientes...</p>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Cliente</th>
+                    <th>Tipo</th>
+                    <th>Estado</th>
+                    <th>Comercial</th>
+                    <th>F. Instalación</th>
+                    <th class="text-end">Importe</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var exp in ExpedientesFiltrados)
+                {
+                    <tr class="clickable" @onclick="() => VerDetalle(exp.Id)">
+                        <td><code>@exp.CodigoExpediente</code></td>
+                        <td>@exp.RazonSocialCliente</td>
+                        <td><EstadoBadge Tipo="@exp.TipoExpediente.ToString()" /></td>
+                        <td><EstadoBadge Tipo="estado" Estado="@exp.Estado.ToString()" /></td>
+                        <td>@(exp.ComercialResponsable ?? "—")</td>
+                        <td>@(exp.FechaInstalacionPrevista?.ToString("dd/MM/yyyy") ?? "—")</td>
+                        <td class="text-end">@(exp.ImportePresupuestado?.ToString("N0") + " €" ?? "—")</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary" @onclick:stopPropagation
+                                    @onclick="() => VerDetalle(exp.Id)">Ver</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <p class="text-muted">@ExpedientesFiltrados.Count() resultados</p>
+}
+
+@code {
+    private IEnumerable<ExpedienteListDto>? _expedientes;
+    private string _busqueda = "";
+    private string _filtroEstado = "";
+    private string _filtroTipo = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        _expedientes = await ExpedienteService.GetAllAsync();
+    }
+
+    private IEnumerable<ExpedienteListDto> ExpedientesFiltrados =>
+        (_expedientes ?? Enumerable.Empty<ExpedienteListDto>())
+        .Where(e =>
+            (string.IsNullOrEmpty(_busqueda) ||
+             e.CodigoExpediente.Contains(_busqueda, StringComparison.OrdinalIgnoreCase) ||
+             e.RazonSocialCliente.Contains(_busqueda, StringComparison.OrdinalIgnoreCase))
+            && (string.IsNullOrEmpty(_filtroEstado) || e.Estado.ToString() == _filtroEstado)
+            && (string.IsNullOrEmpty(_filtroTipo) || e.TipoExpediente.ToString() == _filtroTipo));
+
+    private void VerDetalle(Guid id) => Nav.NavigateTo($"/expedientes/{id}");
+    private void NuevoExpediente() => Nav.NavigateTo("/expedientes/nuevo");
+}

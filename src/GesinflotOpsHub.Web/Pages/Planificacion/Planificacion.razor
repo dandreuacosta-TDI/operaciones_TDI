@@ -1,0 +1,57 @@
+@page "/planificacion"
+@attribute [Authorize(Policy = "Operaciones")]
+@inject IExpedienteService ExpedienteService
+@using GesinflotOpsHub.Application.Services
+@using Microsoft.AspNetCore.Authorization
+
+<PageTitle>Planificación — Gesinflot</PageTitle>
+
+<h1 class="page-title">📅 Planificación de Instalaciones</h1>
+
+<div class="alert alert-info">
+    <strong>Regla operativa:</strong> No se puede confirmar una instalación sin checklist completa,
+    instalador asignado y fecha confirmada con el cliente.
+</div>
+
+@if (_expedientes is null)
+{
+    <p class="loading">Cargando planificación...</p>
+}
+else
+{
+    <div class="kanban-board">
+        <KanbanColumna
+            Titulo="Checklist pendiente"
+            Icono="📋"
+            Expedientes="@ExpedientesPorEstado(Domain.Enums.EstadoExpediente.ChecklistPendiente)" />
+        <KanbanColumna
+            Titulo="Checklist completada"
+            Icono="✅"
+            Expedientes="@ExpedientesPorEstado(Domain.Enums.EstadoExpediente.ChecklistCompletada)" />
+        <KanbanColumna
+            Titulo="Planificación pendiente"
+            Icono="⏳"
+            Expedientes="@ExpedientesPorEstado(Domain.Enums.EstadoExpediente.PlanificacionPendiente)" />
+        <KanbanColumna
+            Titulo="Confirmado"
+            Icono="🗓️"
+            Expedientes="@ExpedientesPorEstado(Domain.Enums.EstadoExpediente.PlanificacionConfirmada)" />
+        <KanbanColumna
+            Titulo="En ejecución"
+            Icono="⚙️"
+            Expedientes="@ExpedientesPorEstado(Domain.Enums.EstadoExpediente.EnEjecucion)" />
+    </div>
+}
+
+@code {
+    private IEnumerable<Application.DTOs.ExpedienteListDto>? _expedientes;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _expedientes = await ExpedienteService.GetAllAsync();
+    }
+
+    private IEnumerable<Application.DTOs.ExpedienteListDto> ExpedientesPorEstado(Domain.Enums.EstadoExpediente estado)
+        => (_expedientes ?? Enumerable.Empty<Application.DTOs.ExpedienteListDto>())
+            .Where(e => e.Estado == estado);
+}

@@ -1,0 +1,103 @@
+@page "/intervenciones"
+@attribute [Authorize(Policy = "Instalador")]
+@inject IIntervencionService IntervencionService
+@inject NavigationManager Nav
+@using GesinflotOpsHub.Application.DTOs
+@using GesinflotOpsHub.Application.Services
+@using GesinflotOpsHub.Domain.Enums
+@using Microsoft.AspNetCore.Authorization
+
+<PageTitle>Intervenciones — Gesinflot</PageTitle>
+
+<div class="page-header">
+    <h1 class="page-title">🔧 Intervenciones</h1>
+</div>
+
+<!-- Filtros -->
+<div class="filtros-bar">
+    <input class="form-control" placeholder="Buscar cliente, código..." @bind="_busqueda" @bind:event="oninput" />
+    <select class="form-select" @bind="_filtroEstado">
+        <option value="">Todos los estados</option>
+        @foreach (var e in Enum.GetValues<EstadoIntervencion>())
+        { <option value="@e">@e</option> }
+    </select>
+    <select class="form-select" @bind="_filtroTipo">
+        <option value="">Todos los tipos</option>
+        @foreach (var t in Enum.GetValues<TipoIntervencion>())
+        { <option value="@t">@t</option> }
+    </select>
+    <input type="month" class="form-control" @bind="_filtroMes" />
+</div>
+
+@if (_intervenciones is null)
+{
+    <p class="loading">Cargando intervenciones...</p>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Cliente</th>
+                    <th>Tipo</th>
+                    <th>Estado</th>
+                    <th>Instalador</th>
+                    <th>Fecha planif.</th>
+                    <th>Fecha ejec.</th>
+                    <th>Provincia</th>
+                    <th class="text-center">Facturable</th>
+                    <th class="text-end">Importe</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var i in IntervencionesFiltradas)
+                {
+                    <tr @onclick="() => VerDetalle(i.Id)" class="clickable">
+                        <td><code>@i.Codigo</code></td>
+                        <td>@i.RazonSocialCliente</td>
+                        <td><span class="badge bg-secondary">@i.Tipo</span></td>
+                        <td><EstadoBadge Tipo="intervencion" Estado="@i.Estado.ToString()" /></td>
+                        <td>@(i.NombreInstalador ?? "—")</td>
+                        <td>@i.FechaPlanificada.ToString("dd/MM/yyyy")</td>
+                        <td>@(i.FechaEjecucion?.ToString("dd/MM/yyyy") ?? "—")</td>
+                        <td>@(i.Provincia ?? "—")</td>
+                        <td class="text-center">@(i.EsFacturable ? "✅" : "❌")</td>
+                        <td class="text-end">@(i.Importe?.ToString("N0") + " €" ?? "—")</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary" @onclick:stopPropagation
+                                    @onclick="() => VerDetalle(i.Id)">Ver</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <p class="text-muted">@IntervencionesFiltradas.Count() intervenciones</p>
+}
+
+@code {
+    private IEnumerable<IntervencionListDto>? _intervenciones;
+    private string _busqueda = "";
+    private string _filtroEstado = "";
+    private string _filtroTipo = "";
+    private string _filtroMes = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        _intervenciones = await IntervencionService.GetAllAsync();
+    }
+
+    private IEnumerable<IntervencionListDto> IntervencionesFiltradas =>
+        (_intervenciones ?? Enumerable.Empty<IntervencionListDto>())
+        .Where(i =>
+            (string.IsNullOrEmpty(_busqueda) ||
+             i.Codigo.Contains(_busqueda, StringComparison.OrdinalIgnoreCase) ||
+             i.RazonSocialCliente.Contains(_busqueda, StringComparison.OrdinalIgnoreCase))
+            && (string.IsNullOrEmpty(_filtroEstado) || i.Estado.ToString() == _filtroEstado)
+            && (string.IsNullOrEmpty(_filtroTipo) || i.Tipo.ToString() == _filtroTipo));
+
+    private void VerDetalle(Guid id) => Nav.NavigateTo($"/intervenciones/{id}");
+}

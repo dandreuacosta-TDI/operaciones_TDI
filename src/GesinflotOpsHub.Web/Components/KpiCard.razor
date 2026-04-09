@@ -1,0 +1,16 @@
+@namespace GesinflotOpsHub.Web.Components
+
+<div class="kpi-card kpi-@Color">
+    <div class="kpi-icon">@Icon</div>
+    <div class="kpi-body">
+        <div class="kpi-value">@Value</div>
+        <div class="kpi-title">@Title</div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public string Title { get; set; } = "";
+    [Parameter] public string Value { get; set; } = "";
+    [Parameter] public string Icon { get; set; } = "📊";
+    [Parameter] public string Color { get; set; } = "blue";
+}

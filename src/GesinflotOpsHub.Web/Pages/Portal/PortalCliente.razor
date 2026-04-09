@@ -1,0 +1,125 @@
+@page "/portal/{Token}"
+@inject IExpedienteService ExpedienteService
+@using GesinflotOpsHub.Application.DTOs
+@using GesinflotOpsHub.Application.Services
+@using GesinflotOpsHub.Domain.Enums
+@layout PortalLayout
+
+<PageTitle>Portal Cliente — Gesinflot</PageTitle>
+
+@if (_cargando)
+{
+    <div class="portal-loading">
+        <p>Cargando su información...</p>
+    </div>
+}
+else if (_exp is null)
+{
+    <div class="portal-error">
+        <h2>Enlace no válido</h2>
+        <p>Este enlace no existe o ha expirado. Por favor, contacte con Gesinflot.</p>
+    </div>
+}
+else
+{
+    <div class="portal-container">
+        <div class="portal-header">
+            <img src="/images/logo-gesinflot.png" alt="Gesinflot" class="portal-logo" />
+            <h1>Presupuesto de instalación</h1>
+        </div>
+
+        <div class="portal-card">
+            <h2>@_exp.RazonSocialCliente</h2>
+            <div class="presupuesto-info">
+                <p><strong>Número:</strong> @(_exp.NumeroPresupuesto ?? _exp.CodigoExpediente)</p>
+                <p><strong>Tipo:</strong> @_exp.TipoExpediente</p>
+                @if (_exp.ImportePresupuestado.HasValue)
+                {
+                    <p><strong>Importe:</strong> @_exp.ImportePresupuestado.Value.ToString("N2") €</p>
+                }
+                @if (_exp.FechaPresupuesto.HasValue)
+                {
+                    <p><strong>Fecha:</strong> @_exp.FechaPresupuesto.Value.ToString("dd/MM/yyyy")</p>
+                }
+            </div>
+        </div>
+
+        @if (_exp.Estado == EstadoExpediente.PresupuestoEnviado)
+        {
+            <div class="portal-aceptacion">
+                <h3>¿Acepta el presupuesto?</h3>
+                <p class="text-muted">Al aceptar, nuestro equipo técnico iniciará la planificación de la instalación.</p>
+
+                @if (!_aceptado)
+                {
+                    <div class="aceptacion-actions">
+                        <button class="btn btn-success btn-lg" @onclick="AceptarPresupuesto">
+                            ✅ Acepto el presupuesto
+                        </button>
+                        <button class="btn btn-outline-danger" @onclick="() => _mostrarRechazo = true">
+                            ❌ No acepto / Tengo dudas
+                        </button>
+                    </div>
+
+                    @if (_mostrarRechazo)
+                    {
+                        <div class="rechazo-form mt-3">
+                            <label>Indique su motivo o consulta:</label>
+                            <textarea class="form-control" @bind="_motivoRechazo" rows="3"
+                                      placeholder="Escriba aquí su comentario..."></textarea>
+                            <button class="btn btn-secondary mt-2" @onclick="EnviarConsulta">Enviar consulta</button>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="alert alert-success">
+                        <h4>✅ Presupuesto aceptado</h4>
+                        <p>Gracias. Nos pondremos en contacto para confirmar fecha de instalación.</p>
+                    </div>
+                }
+            </div>
+        }
+        else if (_exp.Estado >= EstadoExpediente.PresupuestoAceptado)
+        {
+            <div class="alert alert-info">
+                <p>Presupuesto aceptado el @(_exp.FechaAceptacion?.ToString("dd/MM/yyyy") ?? "—")</p>
+                @if (_exp.FechaInstalacionPrevista.HasValue)
+                {
+                    <p>📅 Instalación prevista: <strong>@_exp.FechaInstalacionPrevista.Value.ToString("dd/MM/yyyy")</strong></p>
+                }
+            </div>
+        }
+    </div>
+}
+
+@code {
+    [Parameter] public string Token { get; set; } = "";
+    private ExpedienteDetailDto? _exp;
+    private bool _cargando = true;
+    private bool _aceptado = false;
+    private bool _mostrarRechazo = false;
+    private string _motivoRechazo = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        _exp = await ExpedienteService.GetByTokenPortalAsync(Token);
+        _cargando = false;
+    }
+
+    private async Task AceptarPresupuesto()
+    {
+        if (_exp is null) return;
+        await ExpedienteService.AvanzarEstadoAsync(
+            new ActualizarEstadoExpedienteDto(_exp.Id, EstadoExpediente.PresupuestoAceptado, "Aceptado por portal cliente"),
+            "portal-cliente");
+        _aceptado = true;
+        _exp = await ExpedienteService.GetByTokenPortalAsync(Token);
+    }
+
+    private async Task EnviarConsulta()
+    {
+        // Enviará email al equipo interno con el motivo
+        _mostrarRechazo = false;
+    }
+}
