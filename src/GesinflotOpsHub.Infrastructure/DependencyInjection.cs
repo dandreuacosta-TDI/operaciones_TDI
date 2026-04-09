@@ -14,9 +14,14 @@ public static class DependencyInjection
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         // ── Database ──────────────────────────────────────────────────────
+        // Fallback a cadena vacía si no está configurada (evita crash en startup)
+        var connStr = configuration.GetConnectionString("DefaultConnection")
+            ?? Environment.GetEnvironmentVariable("DATABASE_URL")
+            ?? "Host=localhost;Database=gesinflot_dev;Username=postgres;Password=postgres";
+
         services.AddDbContext<AppDbContext>(options =>
             options.UseNpgsql(
-                configuration.GetConnectionString("DefaultConnection"),
+                connStr,
                 npgsql => npgsql.MigrationsAssembly(typeof(AppDbContext).Assembly.FullName)));
 
         // ── Repositories ──────────────────────────────────────────────────

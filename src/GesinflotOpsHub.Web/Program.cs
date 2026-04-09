@@ -33,6 +33,24 @@ try
     var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
     builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
 
+    // ── Mapear DATABASE_URL de Railway al formato EF Core ─────────────────
+    var connStr = builder.Configuration.GetConnectionString("DefaultConnection");
+    if (string.IsNullOrEmpty(connStr))
+    {
+        var dbUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
+        if (!string.IsNullOrEmpty(dbUrl))
+        {
+            try
+            {
+                var uri = new Uri(dbUrl);
+                var parts = uri.UserInfo.Split(':', 2);
+                connStr = $"Host={uri.Host};Port={uri.Port};Database={uri.AbsolutePath.TrimStart('/')};Username={Uri.UnescapeDataString(parts[0])};Password={Uri.UnescapeDataString(parts[1])};SSL Mode=Require;Trust Server Certificate=true";
+                builder.Configuration["ConnectionStrings:DefaultConnection"] = connStr;
+            }
+            catch { /* URL mal formada, continuar sin BD */ }
+        }
+    }
+
     // ── Layers ────────────────────────────────────────────────────────────
     builder.Services.AddApplication();
     builder.Services.AddInfrastructure(builder.Configuration);
@@ -70,10 +88,12 @@ try
     });
 
     // ── HealthChecks ──────────────────────────────────────────────────────
-    builder.Services.AddHealthChecks()
-        .AddNpgSql(builder.Configuration.GetConnectionString("DefaultConnection") ?? "",
-            name: "postgresql",
-            tags: new[] { "ready", "db" });
+    var hcBuilder = builder.Services.AddHealthChecks();
+    var hcConnStr = builder.Configuration.GetConnectionString("DefaultConnection");
+    if (!string.IsNullOrEmpty(hcConnStr))
+    {
+        hcBuilder.AddNpgSql(hcConnStr, name: "postgresql", tags: new[] { "ready", "db" });
+    }
 
     // ── Antiforgery ───────────────────────────────────────────────────────
     builder.Services.AddAntiforgery();
