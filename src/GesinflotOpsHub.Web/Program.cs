@@ -51,11 +51,12 @@ try
         }
     }
 
-    // ── Data Protection (ephemeral keys: safe for single-instance Railway) ──
+    // ── Data Protection (persist to /tmp so antiforgery works in Railway) ────
+    var dpDir = new System.IO.DirectoryInfo(
+        Environment.GetEnvironmentVariable("DP_KEYS_DIR") ?? "/tmp/dp-keys");
+    if (!dpDir.Exists) dpDir.Create();
     builder.Services.AddDataProtection()
-        .SetApplicationName("GesinflotOpsHub")
-        .PersistKeysToFileSystem(new System.IO.DirectoryInfo(
-            Environment.GetEnvironmentVariable("DP_KEYS_DIR") ?? "/tmp/dp-keys"));
+        .PersistKeysToFileSystem(dpDir);
 
     // ── Layers ────────────────────────────────────────────────────────────
     builder.Services.AddApplication();

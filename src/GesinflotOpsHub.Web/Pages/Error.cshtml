@@ -3,7 +3,7 @@
 @{
     Layout = null;
     Response.StatusCode = 500;
-    var exFeature = Context.Features.Get<IExceptionHandlerPathFeature>();
+    var exFeature = HttpContext.Features.Get<IExceptionHandlerPathFeature>();
     var ex = exFeature?.Error;
 }
 <!DOCTYPE html>
