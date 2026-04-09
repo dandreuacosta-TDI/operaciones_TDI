@@ -131,7 +131,8 @@ try
     // ── API controllers (Dashboard) ───────────────────────────────────────
     app.MapControllers();
 
-    // ── Blazor ────────────────────────────────────────────────────────────
+    // ── Razour Pages (Identity UI) + Blazor ──────────────────────────────
+    app.MapRazorPages();
     app.MapBlazorHub();
     app.MapFallbackToPage("/_Host");
 
