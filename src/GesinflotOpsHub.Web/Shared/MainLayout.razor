@@ -4,8 +4,13 @@
 <div class="page">
     <div class="sidebar">
         <div class="sidebar-brand">
-            <span class="brand-icon">🚛</span>
-            <span class="brand-text">Gesinflot<br/><small>Ops Hub</small></span>
+            <div class="brand-logo">
+                <Icon Name="truck" Class="icon-md" />
+            </div>
+            <div class="brand-text">
+                <div class="brand-name">Gesinflot</div>
+                <div class="brand-sub">Operations Hub</div>
+            </div>
         </div>
         <NavMenu />
     </div>
@@ -13,7 +18,7 @@
         <div class="top-row px-4 auth">
             <LoginDisplay />
         </div>
-        <article class="content px-4">
+        <article class="content">
             @Body
         </article>
     </main>

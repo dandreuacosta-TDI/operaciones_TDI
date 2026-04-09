@@ -1,12 +1,19 @@
 <AuthorizeView>
     <Authorized>
-        <span class="user-info">@context.User.Identity?.Name</span>
-        <form method="post" action="Identity/Account/Logout">
-            <AntiforgeryToken />
-            <button type="submit" class="btn btn-sm btn-outline-secondary">Salir</button>
-        </form>
+        <div class="login-display">
+            <div class="user-avatar">@(context.User.Identity?.Name?.Substring(0,1).ToUpper() ?? "U")</div>
+            <span class="username">@context.User.Identity?.Name</span>
+            <form method="post" action="Identity/Account/Logout" class="logout-form">
+                <AntiforgeryToken />
+                <button type="submit" class="btn btn-sm btn-outline-secondary">
+                    <Icon Name="log-out" Class="icon-sm" /> Salir
+                </button>
+            </form>
+        </div>
     </Authorized>
     <NotAuthorized>
-        <a href="Identity/Account/Login" class="btn btn-sm btn-primary">Acceder</a>
+        <a href="Identity/Account/Login" class="btn btn-sm btn-primary">
+            <Icon Name="user" Class="icon-sm" /> Acceder
+        </a>
     </NotAuthorized>
 </AuthorizeView>

@@ -1,37 +1,59 @@
 <AuthorizeView>
     <Authorized>
-        <div class="nav-menu">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="nav-icon">📊</span> Dashboard
-            </NavLink>
-            <NavLink class="nav-link" href="expedientes">
-                <span class="nav-icon">📁</span> Expedientes
-            </NavLink>
-            <NavLink class="nav-link" href="intervenciones">
-                <span class="nav-icon">🔧</span> Intervenciones
-            </NavLink>
-            <NavLink class="nav-link" href="planificacion">
-                <span class="nav-icon">📅</span> Planificación
-            </NavLink>
-            <NavLink class="nav-link" href="clientes">
-                <span class="nav-icon">🏢</span> Clientes
-            </NavLink>
-            <NavLink class="nav-link" href="instaladores">
-                <span class="nav-icon">👷</span> Instaladores
-            </NavLink>
+        <nav class="nav-menu">
+            <div class="nav-item">
+                <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                    <Icon Name="dashboard" Class="icon-md" /> Dashboard
+                </NavLink>
+            </div>
+            <div class="nav-item">
+                <NavLink class="nav-link" href="expedientes">
+                    <Icon Name="folder" Class="icon-md" /> Expedientes
+                </NavLink>
+            </div>
+            <div class="nav-item">
+                <NavLink class="nav-link" href="intervenciones">
+                    <Icon Name="tool" Class="icon-md" /> Intervenciones
+                </NavLink>
+            </div>
+            <div class="nav-item">
+                <NavLink class="nav-link" href="planificacion">
+                    <Icon Name="calendar" Class="icon-md" /> Planificación
+                </NavLink>
+            </div>
+            <div class="nav-item">
+                <NavLink class="nav-link" href="clientes">
+                    <Icon Name="building" Class="icon-md" /> Clientes
+                </NavLink>
+            </div>
+            <div class="nav-item">
+                <NavLink class="nav-link" href="instaladores">
+                    <Icon Name="users" Class="icon-md" /> Instaladores
+                </NavLink>
+            </div>
 
             <AuthorizeView Roles="Administrador,Operaciones,Direccion" Context="innerCtx">
-                <div class="nav-section-title">Gestión</div>
-                <NavLink class="nav-link" href="usuarios">
-                    <span class="nav-icon">👥</span> Usuarios
-                </NavLink>
-                <NavLink class="nav-link" href="odoo">
-                    <span class="nav-icon">🔗</span> Odoo Sync
-                </NavLink>
+                <div class="nav-section-title">Administración</div>
+                <div class="nav-item">
+                    <NavLink class="nav-link" href="usuarios">
+                        <Icon Name="settings" Class="icon-md" /> Usuarios
+                    </NavLink>
+                </div>
+                <div class="nav-item">
+                    <NavLink class="nav-link" href="odoo">
+                        <Icon Name="link" Class="icon-md" /> Odoo Sync
+                    </NavLink>
+                </div>
             </AuthorizeView>
-        </div>
+        </nav>
     </Authorized>
     <NotAuthorized>
-        <a class="nav-link" href="Identity/Account/Login">Acceder</a>
+        <nav class="nav-menu">
+            <div class="nav-item">
+                <a class="nav-link" href="Identity/Account/Login">
+                    <Icon Name="user" Class="icon-md" /> Acceder
+                </a>
+            </div>
+        </nav>
     </NotAuthorized>
 </AuthorizeView>

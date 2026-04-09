@@ -6,7 +6,7 @@
 
 <PageTitle>Planificación — Gesinflot</PageTitle>
 
-<h1 class="page-title">📅 Planificación de Instalaciones</h1>
+<h1 class="page-title">Planificación de Instalaciones</h1>
 
 <div class="alert alert-info">
     <strong>Regla operativa:</strong> No se puede confirmar una instalación sin checklist completa,
@@ -20,25 +20,15 @@
 else
 {
     <div class="kanban-board">
-        <KanbanColumna
-            Titulo="Checklist pendiente"
-            Icono="📋"
+        <KanbanColumna Titulo="Checklist pendiente"
             Expedientes="@ExpedientesPorEstado(Domain.Enums.EstadoExpediente.ChecklistPendiente)" />
-        <KanbanColumna
-            Titulo="Checklist completada"
-            Icono="✅"
+        <KanbanColumna Titulo="Checklist completada"
             Expedientes="@ExpedientesPorEstado(Domain.Enums.EstadoExpediente.ChecklistCompletada)" />
-        <KanbanColumna
-            Titulo="Planificación pendiente"
-            Icono="⏳"
+        <KanbanColumna Titulo="Planificación pendiente"
             Expedientes="@ExpedientesPorEstado(Domain.Enums.EstadoExpediente.PlanificacionPendiente)" />
-        <KanbanColumna
-            Titulo="Confirmado"
-            Icono="🗓️"
+        <KanbanColumna Titulo="Confirmado"
             Expedientes="@ExpedientesPorEstado(Domain.Enums.EstadoExpediente.PlanificacionConfirmada)" />
-        <KanbanColumna
-            Titulo="En ejecución"
-            Icono="⚙️"
+        <KanbanColumna Titulo="En ejecución"
             Expedientes="@ExpedientesPorEstado(Domain.Enums.EstadoExpediente.EnEjecucion)" />
     </div>
 }

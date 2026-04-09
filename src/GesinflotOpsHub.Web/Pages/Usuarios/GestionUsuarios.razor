@@ -9,8 +9,13 @@
 <PageTitle>Usuarios — Gesinflot</PageTitle>
 
 <div class="page-header">
-    <h1 class="page-title">👥 Gestión de Usuarios</h1>
-    <button class="btn btn-primary" @onclick="() => _mostrarNuevo = true">+ Nuevo usuario</button>
+    <div>
+        <h1 class="page-title">Gestión de Usuarios</h1>
+        <p class="page-subtitle">Administración de accesos y roles</p>
+    </div>
+    <button class="btn btn-primary" @onclick="() => _mostrarNuevo = true">
+        <Icon Name="plus" Class="icon-sm" /> Nuevo usuario
+    </button>
 </div>
 
 @if (_usuarios is null)
@@ -38,7 +43,10 @@ else
                     <td>@u.Email</td>
                     <td><span class="badge bg-info">@u.Rol</span></td>
                     <td>@(u.FechaUltimoAcceso?.ToString("dd/MM/yyyy HH:mm") ?? "Nunca")</td>
-                    <td>@(u.Activo ? "✅ Activo" : "❌ Inactivo")</td>
+                    <td>
+                        <span class="status-dot @(u.Activo ? "active" : "inactive")"></span>
+                        @(u.Activo ? "Activo" : "Inactivo")
+                    </td>
                     <td>
                         <button class="btn btn-sm btn-outline-secondary" @onclick="() => EditarUsuario(u)">Editar</button>
                         <button class="btn btn-sm btn-outline-warning" @onclick="() => ResetPassword(u)">Reset pwd</button>

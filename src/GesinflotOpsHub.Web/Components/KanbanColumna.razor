@@ -4,8 +4,8 @@
 
 <div class="kanban-col">
     <div class="kanban-col-header">
-        <span>@Icono @Titulo</span>
-        <span class="badge bg-secondary">@Expedientes.Count()</span>
+        <span>@Titulo</span>
+        <span class="kanban-count">@Expedientes.Count()</span>
     </div>
     <div class="kanban-cards">
         @foreach (var exp in Expedientes)
@@ -17,7 +17,7 @@
                     <span>@exp.TipoExpediente</span>
                     @if (exp.FechaInstalacionPrevista.HasValue)
                     {
-                        <span class="card-fecha">📅 @exp.FechaInstalacionPrevista.Value.ToString("dd/MM")</span>
+                        <span class="card-fecha">@exp.FechaInstalacionPrevista.Value.ToString("dd/MM")</span>
                     }
                 </div>
             </div>
@@ -27,7 +27,6 @@
 
 @code {
     [Parameter] public string Titulo { get; set; } = "";
-    [Parameter] public string Icono { get; set; } = "";
     [Parameter] public IEnumerable<ExpedienteListDto> Expedientes { get; set; } = Enumerable.Empty<ExpedienteListDto>();
 
     private void VerExpediente(Guid id) => Nav.NavigateTo($"/expedientes/{id}");

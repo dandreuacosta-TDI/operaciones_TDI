@@ -22,7 +22,9 @@ else
             <span class="badge-tipo">@_exp.TipoExpediente</span>
         </div>
         <div class="actions">
-            <button class="btn btn-outline-secondary btn-sm" @onclick="Volver">← Volver</button>
+            <button class="btn btn-secondary btn-sm" @onclick="Volver">
+                    <Icon Name="arrow-left" Class="icon-sm" /> Volver
+                </button>
             <AuthorizeView Roles="Administrador,Operaciones">
                 <button class="btn btn-warning btn-sm" @onclick="() => _mostrarCambioEstado = true">Cambiar estado</button>
             </AuthorizeView>
@@ -88,13 +90,13 @@ else
     <!-- Acciones rápidas -->
     <div class="acciones-rapidas">
         <button class="btn btn-outline-primary btn-sm" @onclick="VerChecklist">
-            📋 Ver checklist
+            <Icon Name="clipboard" Class="icon-sm" /> Ver checklist
         </button>
         <button class="btn btn-outline-primary btn-sm" @onclick="VerPlanificacion">
-            📅 Planificación
+            <Icon Name="calendar" Class="icon-sm" /> Planificación
         </button>
         <button class="btn btn-outline-primary btn-sm" @onclick="VerIntervenciones">
-            🔧 Intervenciones
+            <Icon Name="tool" Class="icon-sm" /> Intervenciones
         </button>
     </div>
 

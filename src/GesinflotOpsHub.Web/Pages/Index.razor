@@ -7,7 +7,12 @@
 
 <PageTitle>Dashboard — Gesinflot Ops Hub</PageTitle>
 
-<h1 class="page-title">📊 Dashboard Operativo</h1>
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Dashboard Operativo</h1>
+        <p class="page-subtitle">Resumen de actividad y KPIs del periodo actual</p>
+    </div>
+</div>
 
 @if (_kpis is null)
 {
@@ -16,43 +21,51 @@
 else
 {
     <div class="kpi-grid">
-        <KpiCard Title="Expedientes activos" Value="@_kpis.ExpedientesActivos.ToString()" Icon="📁" Color="blue" />
-        <KpiCard Title="Instalaciones pendientes" Value="@_kpis.InstalacionesPendientes.ToString()" Icon="📅" Color="orange" />
-        <KpiCard Title="Intervenciones este mes" Value="@_kpis.IntervencionesEstesMes.ToString()" Icon="🔧" Color="green" />
-        <KpiCard Title="Checklists pendientes" Value="@_kpis.ChecklistsPendientes.ToString()" Icon="✅" Color="yellow" />
-        <KpiCard Title="Facturación del mes" Value="@($"{_kpis.FacturacionMes:N0} €")" Icon="💶" Color="teal" />
-        <KpiCard Title="Facturación acumulada" Value="@($"{_kpis.FacturacionAcumulada:N0} €")" Icon="📈" Color="purple" />
-        <KpiCard Title="Margen medio" Value="@($"{_kpis.MargenMedio:N1} %")" Icon="📉" Color="red" />
-        <KpiCard Title="Intervenciones realizadas" Value="@_kpis.IntervencionesRealizadas.ToString()" Icon="✔️" Color="green" />
+        <KpiCard Title="Expedientes activos" Value="@_kpis.ExpedientesActivos.ToString()" IconName="folder" Color="blue" />
+        <KpiCard Title="Instalaciones pendientes" Value="@_kpis.InstalacionesPendientes.ToString()" IconName="calendar" Color="orange" />
+        <KpiCard Title="Intervenciones este mes" Value="@_kpis.IntervencionesEstesMes.ToString()" IconName="tool" Color="green" />
+        <KpiCard Title="Checklists pendientes" Value="@_kpis.ChecklistsPendientes.ToString()" IconName="clipboard" Color="yellow" />
+        <KpiCard Title="Facturación del mes" Value="@($"{_kpis.FacturacionMes:N0} €")" IconName="euro" Color="teal" />
+        <KpiCard Title="Facturación acumulada" Value="@($"{_kpis.FacturacionAcumulada:N0} €")" IconName="trending-up" Color="purple" />
+        <KpiCard Title="Margen medio" Value="@($"{_kpis.MargenMedio:N1} %")" IconName="percent" Color="red" />
+        <KpiCard Title="Intervenciones realizadas" Value="@_kpis.IntervencionesRealizadas.ToString()" IconName="check-circle" Color="green" />
     </div>
 
-    <div class="dashboard-section">
-        <h3>Intervenciones por tipo</h3>
-        <div class="chart-bar-list">
-            @foreach (var kv in _kpis.IntervencionesiPorTipo.OrderByDescending(x => x.Value))
-            {
-                <div class="bar-row">
-                    <span class="bar-label">@kv.Key</span>
-                    <div class="bar" style="width:@(kv.Value * 20)px">@kv.Value</div>
-                </div>
-            }
-        </div>
-    </div>
-
-    <div class="dashboard-section">
-        <h3>Facturación por comercial</h3>
-        <table class="table table-sm">
-            <thead><tr><th>Comercial</th><th class="text-end">Importe</th></tr></thead>
-            <tbody>
-                @foreach (var kv in _kpis.FacturacionPorComercial.OrderByDescending(x => x.Value))
+    <div class="section-grid">
+        <div class="dashboard-section">
+            <div class="section-header"><h3>Intervenciones por tipo</h3></div>
+            <div class="section-body chart-bar-list">
+                @foreach (var kv in _kpis.IntervencionesiPorTipo.OrderByDescending(x => x.Value))
                 {
-                    <tr>
-                        <td>@kv.Key</td>
-                        <td class="text-end">@kv.Value.ToString("N0") €</td>
-                    </tr>
+                    var max = _kpis.IntervencionesiPorTipo.Values.DefaultIfEmpty(1).Max();
+                    var pct = max > 0 ? (int)(kv.Value * 100.0 / max) : 0;
+                    <div class="bar-row">
+                        <span class="bar-label">@kv.Key</span>
+                        <div class="bar-inner flex-1">
+                            <div class="bar-fill" style="width:@pct%"></div>
+                        </div>
+                        <span style="font-size:12px;color:var(--text-muted);min-width:24px">@kv.Value</span>
+                    </div>
                 }
-            </tbody>
-        </table>
+            </div>
+        </div>
+        <div class="dashboard-section">
+            <div class="section-header"><h3>Facturación por comercial</h3></div>
+            <div class="section-body">
+                <table class="table" style="margin:0">
+                    <thead><tr><th>Comercial</th><th class="text-end">Importe</th></tr></thead>
+                    <tbody>
+                        @foreach (var kv in _kpis.FacturacionPorComercial.OrderByDescending(x => x.Value))
+                        {
+                            <tr>
+                                <td>@kv.Key</td>
+                                <td class="text-end">@kv.Value.ToString("N0") €</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 }
 
