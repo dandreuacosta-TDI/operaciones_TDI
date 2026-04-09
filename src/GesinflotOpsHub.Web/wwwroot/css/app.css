@@ -478,11 +478,18 @@ tr.clickable:hover { background: #f0f4ff !important; }
 .chart-bar-list .bar { background: var(--brand-primary); color: white; font-size: 11px;
     padding: 3px 8px; border-radius: 4px; min-width: 30px; }
 
-/* ── Blazor error UI ─────────────────────────────────────────────────────── */
-#blazor-error-ui { background: #f8d7da; border: 1px solid #f5c2c7; border-radius: 4px;
-    padding: 12px 20px; position: fixed; bottom: 20px; right: 20px; z-index: 9999;
-    display: none; font-size: 14px; }
-#blazor-error-ui a { color: inherit; font-weight: bold; }
+/* ── Auth Pages ─────────────────────────────────────────────────────────── */
+.auth-page { min-height: 100vh; background: var(--bg); display: flex; align-items: center; justify-content: center; }
+.auth-container { width: 100%; max-width: 460px; padding: 20px; }
+.auth-logo-wrap { text-align: center; margin-bottom: 28px; }
+.auth-logo-icon {
+    width: 56px; height: 56px; background: var(--brand-blue); border-radius: 14px;
+    display: inline-flex; align-items: center; justify-content: center; margin-bottom: 12px;
+}
+.auth-brand-name { font-size: 22px; font-weight: 700; color: var(--text-primary); line-height: 1.2; }
+.auth-brand-sub { font-size: 13px; color: var(--text-secondary); margin-top: 2px; }
+.auth-page .card { border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: var(--shadow-md); }
+.auth-page h2 { font-size: 18px; font-weight: 600; margin-bottom: 20px; color: var(--text-primary); }
 
 /* ── Responsive ─────────────────────────────────────────────────────────── */
 @media (max-width: 768px) {

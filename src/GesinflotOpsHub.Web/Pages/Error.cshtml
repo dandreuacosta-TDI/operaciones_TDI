@@ -1,0 +1,34 @@
+@page "/Error"
+@{
+    Layout = null;
+    Response.StatusCode = 500;
+}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Error — Gesinflot Ops Hub</title>
+    <link rel="stylesheet" href="~/css/bootstrap/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/app.css" />
+</head>
+<body class="auth-page">
+    <div class="auth-container text-center">
+        <div class="auth-logo-wrap">
+            <div class="auth-logo-icon" style="margin:0 auto 12px;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.75"
+                     stroke-linecap="round" stroke-linejoin="round" width="26" height="26">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="12" y1="8" x2="12" y2="12"/>
+                    <line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+            </div>
+            <div class="auth-brand-name">Ha ocurrido un error</div>
+            <div class="auth-brand-sub" style="margin-top:8px;">
+                Lo sentimos, no fue posible procesar tu solicitud.
+            </div>
+        </div>
+        <a href="/" class="btn btn-primary">Volver al inicio</a>
+    </div>
+</body>
+</html>
