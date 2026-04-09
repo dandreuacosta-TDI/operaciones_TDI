@@ -37,6 +37,15 @@ public static class DependencyInjection
         services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<IDashboardService, DashboardService>();
 
+        // ── Resend email client ───────────────────────────────────────────
+        services.AddHttpClient("Resend", (sp, client) =>
+        {
+            var cfg = sp.GetRequiredService<IConfiguration>();
+            var apiKey = cfg["Resend:ApiKey"] ?? throw new InvalidOperationException("Resend:ApiKey no configurado");
+            client.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiKey);
+        });
+
         return services;
     }
 }
