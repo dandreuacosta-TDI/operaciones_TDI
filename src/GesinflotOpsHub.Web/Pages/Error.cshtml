@@ -1,7 +1,10 @@
 @page "/Error"
+@using Microsoft.AspNetCore.Diagnostics
 @{
     Layout = null;
     Response.StatusCode = 500;
+    var exFeature = Context.Features.Get<IExceptionHandlerPathFeature>();
+    var ex = exFeature?.Error;
 }
 <!DOCTYPE html>
 <html lang="es">
@@ -9,26 +12,40 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Error — Gesinflot Ops Hub</title>
-    <link rel="stylesheet" href="~/css/bootstrap/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/app.css" />
+    <style>
+        body { font-family: system-ui, sans-serif; background: #f8fafc; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
+        .err-box { background: white; border-radius: 12px; box-shadow: 0 4px 24px rgba(0,0,0,.1); padding: 36px; max-width: 760px; width: 100%; }
+        .err-icon { width: 52px; height: 52px; background: #ef4444; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; }
+        h2 { text-align: center; font-size: 20px; margin: 0 0 8px; }
+        .err-path { text-align: center; color: #64748b; font-size: 13px; margin-bottom: 20px; }
+        details { background: #f1f5f9; border-radius: 8px; padding: 16px; margin-top: 16px; }
+        summary { font-weight: 600; cursor: pointer; font-size: 13px; }
+        pre { font-size: 11px; overflow-x: auto; white-space: pre-wrap; margin: 12px 0 0; color: #334155; }
+        .btn-back { display: block; text-align: center; margin-top: 20px; background: #1d4ed8; color: white; border-radius: 8px; padding: 10px 24px; text-decoration: none; font-weight: 600; }
+    </style>
 </head>
-<body class="auth-page">
-    <div class="auth-container text-center">
-        <div class="auth-logo-wrap">
-            <div class="auth-logo-icon" style="margin:0 auto 12px;">
-                <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.75"
-                     stroke-linecap="round" stroke-linejoin="round" width="26" height="26">
-                    <circle cx="12" cy="12" r="10"/>
-                    <line x1="12" y1="8" x2="12" y2="12"/>
-                    <line x1="12" y1="16" x2="12.01" y2="16"/>
-                </svg>
-            </div>
-            <div class="auth-brand-name">Ha ocurrido un error</div>
-            <div class="auth-brand-sub" style="margin-top:8px;">
-                Lo sentimos, no fue posible procesar tu solicitud.
-            </div>
+<body>
+    <div class="err-box">
+        <div class="err-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" width="28" height="28">
+                <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
         </div>
-        <a href="/" class="btn btn-primary">Volver al inicio</a>
+        <h2>Ha ocurrido un error</h2>
+        @if (exFeature != null)
+        {
+            <p class="err-path">Ruta: <code>@exFeature.Path</code></p>
+            <details open>
+                <summary>@(ex?.GetType().Name): @(ex?.Message)</summary>
+                <pre>@ex?.ToString()</pre>
+            </details>
+        }
+        else
+        {
+            <p class="err-path">No fue posible procesar tu solicitud.</p>
+        }
+        <a href="/" class="btn-back">Volver al inicio</a>
     </div>
 </body>
 </html>

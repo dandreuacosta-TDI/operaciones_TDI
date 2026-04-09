@@ -51,6 +51,12 @@ try
         }
     }
 
+    // ── Data Protection (ephemeral keys: safe for single-instance Railway) ──
+    builder.Services.AddDataProtection()
+        .SetApplicationName("GesinflotOpsHub")
+        .PersistKeysToFileSystem(new System.IO.DirectoryInfo(
+            Environment.GetEnvironmentVariable("DP_KEYS_DIR") ?? "/tmp/dp-keys"));
+
     // ── Layers ────────────────────────────────────────────────────────────
     builder.Services.AddApplication();
     builder.Services.AddInfrastructure(builder.Configuration);

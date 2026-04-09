@@ -1,8 +1,11 @@
 @inject NavigationManager Nav
 
 @code {
-    protected override void OnInitialized()
+    protected override void OnAfterRender(bool firstRender)
     {
-        Nav.NavigateTo($"Identity/Account/Login?returnUrl={Uri.EscapeDataString(Nav.Uri)}");
+        if (firstRender)
+        {
+            Nav.NavigateTo($"/Identity/Account/Login?returnUrl={Uri.EscapeDataString(Nav.Uri)}", forceLoad: true);
+        }
     }
 }
