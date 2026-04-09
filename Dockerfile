@@ -6,23 +6,13 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Copiar archivos de proyecto primero (cache de NuGet)
-COPY ["src/GesinflotOpsHub.Domain/GesinflotOpsHub.Domain.csproj",          "src/GesinflotOpsHub.Domain/"]
-COPY ["src/GesinflotOpsHub.Application/GesinflotOpsHub.Application.csproj","src/GesinflotOpsHub.Application/"]
-COPY ["src/GesinflotOpsHub.Infrastructure/GesinflotOpsHub.Infrastructure.csproj","src/GesinflotOpsHub.Infrastructure/"]
-COPY ["src/GesinflotOpsHub.Web/GesinflotOpsHub.Web.csproj",                "src/GesinflotOpsHub.Web/"]
-
-# Restore paquetes
-RUN dotnet restore "src/GesinflotOpsHub.Web/GesinflotOpsHub.Web.csproj"
-
-# Copiar el resto del código
+# Copiar todo el código fuente
 COPY . .
 
-# Publicar en modo Release
+# Restore + Publish en un solo paso (evita problemas de caché de NuGet entre capas)
 RUN dotnet publish "src/GesinflotOpsHub.Web/GesinflotOpsHub.Web.csproj" \
     -c Release \
     -o /app/publish \
-    --no-restore \
     /p:UseAppHost=false
 
 # ── Stage 2: Runtime ────────────────────────────────────────────────────────────
